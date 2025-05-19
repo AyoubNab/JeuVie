@@ -14,7 +14,6 @@ public abstract class Entite {
     private int soif = 100;
     private int faim = 100;
     private int energie = 100;
-    private boolean estEncoreEnVie = true;
 
 
     public int getAge() {return age;}
@@ -23,14 +22,14 @@ public abstract class Entite {
     public int getEnergie() {return energie;}
 
 
-    public boolean estVie(){
+    public boolean estEnVie(){
         if (soif > 0 && faim > 0) return true;
-        estEncoreEnVie = false;
         return false;
     }
 
     public void prochainTick(){
-
+        if (estEnVie()) {
+        }
     }
 
     public Entite(int faimTick, int soifTick, int positionX, int positionY) {
