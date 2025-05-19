@@ -1,4 +1,4 @@
-package Alments;
+package Element;
 
 public abstract class Aliment {
     private int valeurNutritionelle = 10;
@@ -6,7 +6,6 @@ public abstract class Aliment {
 
 
     public Aliment(){
-
     }
 
     public Aliment(int valeurNutritionelle) {
@@ -14,6 +13,7 @@ public abstract class Aliment {
     }
 
     public int getValeurNutritionelle() { return valeurNutritionelle; }
+
     public boolean consomer(int quantite) {
         if (quantite > valeurNutritionelle) return false;
         valeurNutritionelle -= quantite;

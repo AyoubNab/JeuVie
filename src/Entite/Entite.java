@@ -1,5 +1,6 @@
-import java.util.ArrayList;
-import java.util.List;
+package Entite;
+
+import Aliments.Aliment;
 
 public abstract class Entite {
     private int positionX;
@@ -32,8 +33,10 @@ public abstract class Entite {
 
     }
 
-    public void manger(Aliment a){
-        a.
+    public void manger(Aliment a, int quantite){
+        if(a.consomer(quantite)){
+
+        }
     }
 
     public Entite(int faimTick, int soifTick, int positionX, int positionY) {
