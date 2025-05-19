@@ -34,6 +34,10 @@ public abstract class Entite {
         faim -= faimTick;
     }
 
+    public void avancerHaut(){
+
+    }
+
     public boolean manger(Aliment a, int quantite){
         return a.consomer(quantite);
     }
