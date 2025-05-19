@@ -28,8 +28,12 @@ public abstract class Entite {
     }
 
     public void prochainTick(){
-        if (estEnVie()) {
-        }
+        if (!estEnVie()) return;
+
+    }
+
+    public void manger(Aliment a){
+        a.
     }
 
     public Entite(int faimTick, int soifTick, int positionX, int positionY) {
