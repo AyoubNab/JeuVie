@@ -1,4 +1,9 @@
 package Element.Aliment.Heritage;
 
-public class Pomme {
+import Element.Aliment.Aliment;
+
+public class Pomme extends Aliment {
+    public Pomme() {
+        super(5);
+    }
 }

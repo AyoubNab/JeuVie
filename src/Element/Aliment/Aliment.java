@@ -1,6 +1,7 @@
-package Element;
+package Element.Aliment;
+import Element.Element;
 
-public abstract class Aliment {
+public abstract class Aliment extends Element {
     private int valeurNutritionelle = 10;
     boolean estConsomer = false;
 
