@@ -1,10 +1,12 @@
 package Entite;
 
 import Element.Aliment.Aliment;
+import Monde.Monde;
 
 public abstract class Entite {
     private int positionX;
     private int positionY;
+    private Monde monde;
 
     //ticks
     private int faimTick;
@@ -34,15 +36,18 @@ public abstract class Entite {
         faim -= faimTick;
     }
 
-    public void avancerHaut(){
 
-    }
 
     public boolean manger(Aliment a, int quantite){
         return a.consomer(quantite);
     }
 
-    public Entite(int faimTick, int soifTick, int positionX, int positionY) {
+    public Entite(int faimTick, int soifTick, int positionX, int positionY, Monde monde) {
+        this.monde = monde;
+        int tailleMonde = monde.getTaille();
+        //si la position n'est pas dans le monde alors la position sera 1,1
+        if((positionX == 0 || positionX == tailleMonde - 1) || (positionX < 0 || positionX > tailleMonde)) positionX = 1;
+        if((positionY == 0 || positionX == tailleMonde - 1) || (positionY < 0 || positionX > tailleMonde)) positionY = 1;
 
     }
 }

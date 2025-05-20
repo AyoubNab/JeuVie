@@ -21,10 +21,13 @@ public class Monde {
                     ligneBlocks.add(new Block(false,false,false));
                 }
                 else ligneBlocks.add(new Block());
-
             }
-
 
         }
     }
+
+    public int getTaille() {
+        return taille;
+    }
+
 }
