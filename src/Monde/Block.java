@@ -28,5 +28,11 @@ public class Block {
         entites.remove(e);
     }
 
+    public boolean estTraverseable() {
+        return estTraverseable;
+    }
+
+
+
 
 }

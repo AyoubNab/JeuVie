@@ -30,4 +30,7 @@ public class Monde {
         return taille;
     }
 
+    public ArrayList<ArrayList<Block>> getBlocks() {
+        return blocks;
+    }
 }
