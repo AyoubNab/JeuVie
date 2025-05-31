@@ -22,7 +22,7 @@ public class Monde {
                 }
                 else ligneBlocks.add(new Block());
             }
-
+            blocks.add(ligneBlocks); // Add the row of blocks to the main list
         }
     }
 
