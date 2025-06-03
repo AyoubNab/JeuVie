@@ -304,6 +304,37 @@ public class ApiHandler {
                         commandSuccess = false;
                     }
                     break;
+                case "couperarbre":
+                    if (entity instanceof Humain) {
+                        Humain humain = (Humain) entity;
+                        actionOutcome = humain.couperArbreLePlusProche();
+                        commandSuccess = actionOutcome.contains("a coupé un Arbre et obtenu");
+                        notificationMessages.add(actionOutcome);
+                    } else {
+                        actionOutcome = "CouperArbre action failed: Entity is not a Humain.";
+                        notificationMessages.add(actionOutcome);
+                        commandSuccess = false;
+                    }
+                    break;
+                case "construiremur":
+                    if (entity instanceof Humain) {
+                        Humain humain = (Humain) entity;
+                        String constructionDirection = params.get("Direction"); // Renamed variable
+                        if (constructionDirection != null && !constructionDirection.isEmpty()) {
+                            actionOutcome = humain.construireMur(constructionDirection);
+                            commandSuccess = actionOutcome.contains("a construit un Mur");
+                            notificationMessages.add(actionOutcome);
+                        } else {
+                            actionOutcome = "ConstruireMur action failed: Missing or empty Direction parameter.";
+                            notificationMessages.add(actionOutcome);
+                            commandSuccess = false;
+                        }
+                    } else {
+                        actionOutcome = "ConstruireMur action failed: Entity is not a Humain.";
+                        notificationMessages.add(actionOutcome);
+                        commandSuccess = false;
+                    }
+                    break;
                 default:
                     notificationMessages.add("Unknown or unsupported action: " + action);
                     actionOutcome = "Unknown action: " + action;

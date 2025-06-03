@@ -52,6 +52,10 @@ public abstract class Entite {
 
     public boolean estVivant() { return this.vivant; } // Added getter for vivant status
 
+    public Monde getMonde() { // Added getter for monde
+        return monde;
+    }
+
     public Block getBlockActuelle() { return blockActuelle; } // Reverted to rely on import Monde.*
 
     public abstract void action(); // Added abstract action method
