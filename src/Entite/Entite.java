@@ -4,11 +4,14 @@ import Element.Aliment.Aliment;
 import Monde.*;
 
 public abstract class Entite {
+    protected String id; // Added ID
+    protected String type; // Added type
+
     private int positionX;
     private int positionY;
     private Monde monde;
     private Block blockActuelle;
-    
+
     //ticks
     private int faimTick;
     private int soifTick;
@@ -22,17 +25,36 @@ public abstract class Entite {
     private int sante = 100; // Added sante
     private boolean vivant = true;
 
-    public int getPositionX() { return positionX; } // Added getter
-    public int getPositionY() { return positionY; } // Added getter
+    public int getPositionX() { return positionX; }
+    public int getPositionY() { return positionY; }
+
+    public String getId() { return id; } // Added getter for ID
+    public String getType() { return type; } // Added getter for type
 
     public int getAge() {return age;}
     public int getSoif() {return soif;}
     public int getFaim() {return faim;}
+    public void setFaim(int faim) { // Added setter for faim
+        this.faim = Math.max(0, Math.min(100, faim)); // Clamp faim between 0 and 100
+    }
     public int getEnergie() {return energie;}
-    public int getSante() {return sante;} // Added getter for sante
+    public void setEnergie(int energie) { // Added setter for energie
+        this.energie = Math.max(0, Math.min(100, energie)); // Clamp energy between 0 and 100
+    }
+    public int getSante() {return sante;}
+    public void setSante(int sante) { // Added setter for sante
+        this.sante = Math.max(0, Math.min(100, sante)); // Clamp sante between 0 and 100
+        if (this.sante <= 0 && this.vivant) {
+            this.vivant = false;
+            // System.out.println(this.id + " n'est plus vivant (santé à 0).");
+        }
+    }
 
-    public Block getBlockActuelle() { return blockActuelle; }
+    public boolean estVivant() { return this.vivant; } // Added getter for vivant status
 
+    public Block getBlockActuelle() { return blockActuelle; } // Reverted to rely on import Monde.*
+
+    public abstract void action(); // Added abstract action method
 
     public void prochainTick(){
         if (!vivant ) return;
@@ -79,11 +101,13 @@ public abstract class Entite {
     // The previous SEARCH block was for prochainTick, this one is for manger.
     // This should be fine.
 
-    public Entite(int faimTick, int soifTick, int positionX, int positionY, Monde monde) {
+    public Entite(String id, String type, int faimTick, int soifTick, int positionX, int positionY, Monde monde) {
+        this.id = id;
+        this.type = type;
         this.faimTick = faimTick;
         this.soifTick = soifTick;
-        this.monde = monde; 
-        
+        this.monde = monde;
+
         int tailleMonde = monde.getTaille();
 
         int finalPosX = positionX;
@@ -108,10 +132,56 @@ public abstract class Entite {
             }
         }
         
-        positionX = finalPosX;
-        positionY = finalPosY;
+        this.positionX = finalPosX; // Correctly assign to field
+        this.positionY = finalPosY; // Correctly assign to field
         
+        blockActuelle = monde.getBlocks().get(this.positionY).get(this.positionX);
+        if (blockActuelle != null) {
+            blockActuelle.ajouterEntite(this); // Ensure entity is on the block's list
+        }
+    }
+
+    // Generic deplacer method
+    public void deplacer(int dx, int dy) {
+        if (!vivant) return;
+
+        int targetX = positionX + dx;
+        int targetY = positionY + dy;
+
+        // Boundary checks
+        if (targetX < 0 || targetX >= monde.getTaille() || targetY < 0 || targetY >= monde.getTaille()) {
+            System.out.println("DEBUGLOG: " + id + " cannot move out of bounds. Target: (" + targetX + "," + targetY + ")");
+            return;
+        }
+
+        // Traversability check
+        if (!monde.getBlocks().get(targetY).get(targetX).estTraverseable()) {
+            System.out.println("DEBUGLOG: " + id + " cannot move to non-traversable block at (" + targetX + "," + targetY + ")");
+            return;
+        }
+
+        // Energy check (assuming coutDeplacement is for one step)
+        // For simplicity, let's assume moving 1 unit in X and 1 unit in Y costs twice.
+        // A more sophisticated approach might use sqrt(dx^2 + dy^2) or Manhattan distance for cost.
+        int cost = coutDeplacement * (Math.abs(dx) + Math.abs(dy));
+        if (energie < cost) {
+            System.out.println("DEBUGLOG: " + id + " does not have enough energy to move. Has " + energie + ", needs " + cost);
+            return;
+        }
+
+        energie -= cost;
+
+        // Update position and block
+        if (blockActuelle != null) {
+            blockActuelle.enleverEntite(this);
+        }
+        positionX = targetX;
+        positionY = targetY;
         blockActuelle = monde.getBlocks().get(positionY).get(positionX);
+        if (blockActuelle != null) {
+            blockActuelle.ajouterEntite(this);
+        }
+        // System.out.println(id + " moved to (" + positionX + "," + positionY + ")");
     }
 
     public void deplacerHaut(){
@@ -184,5 +254,12 @@ public abstract class Entite {
         blockActuelle.enleverEntite(this);
         blockActuelle = monde.getBlocks().get(positionY).get(positionX);
         blockActuelle.ajouterEntite(this);
+    }
+
+    // Placeholder for interaction
+    public String interagir() {
+        if (!vivant) return this.id + " cannot interact.";
+        // Basic interaction, subclasses can override for specific behaviors
+        return this.id + " (" + this.type + ") interagit avec son environnement.";
     }
 }
