@@ -4,6 +4,6 @@ import Element.Aliment.Aliment;
 
 public class Carotte extends Aliment {
     public Carotte() {
-        super(4);
+        super("Carotte", "Une carotte fraiche", 4);
     }
 }

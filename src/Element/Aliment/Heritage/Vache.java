@@ -4,6 +4,6 @@ import Element.Aliment.Aliment;
 
 public class Vache extends Aliment {
     public Vache() {
-        super(200);
+        super("Vache", "Une vache (source de nourriture)", 200);
     }
 }
