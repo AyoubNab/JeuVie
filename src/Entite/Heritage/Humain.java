@@ -188,4 +188,78 @@ public class Humain extends Entite {
         // Humain specific interaction
         return super.interagir() + " L'humain examine attentivement son environnement.";
     }
+
+    public String mangerItemEspecific(String itemName, int quantity) {
+        if (itemName == null || itemName.isEmpty() || quantity <= 0) {
+            return "Invalid item name or quantity for eating.";
+        }
+
+        Aliment alimentToEat = null;
+        for (Element item : Inventaire) { // Inventaire is List<Element>
+            if (item instanceof Aliment) {
+                Aliment currentAliment = (Aliment) item;
+                // Using toString() as a proxy for item name matching.
+                // Assumes Aliment subclasses override toString() to return simple name (e.g., "Carotte").
+                if (currentAliment.toString().toLowerCase().contains(itemName.toLowerCase())) {
+                    alimentToEat = currentAliment;
+                    break;
+                }
+            }
+        }
+
+        if (alimentToEat != null) {
+            boolean eaten = manger(alimentToEat, quantity); // This calls the overridden manger in Humain
+            if (eaten) {
+                return "Successfully ate " + quantity + " of " + alimentToEat.getNom() + ". Faim: " + getFaim();
+            } else {
+                return "Failed to eat " + alimentToEat.getNom() + " (e.g., not enough, or not consumable).";
+            }
+        } else {
+            return "Could not find " + itemName + " in inventory.";
+        }
+    }
+
+    public String ramasserItemEspecific(String itemName) {
+        if (itemName == null || itemName.isEmpty()) {
+            return "Invalid item name for ramasser.";
+        }
+
+        Block currentBlock = getBlockActuelle();
+        if (currentBlock == null) {
+            return "Cannot ramasser item, current block is null.";
+        }
+
+        Element elementToRamasser = null;
+        // Iterate over a copy to avoid ConcurrentModificationException if Block.enleverElement modifies the list
+        for (Element element : new ArrayList<>(currentBlock.getElements())) {
+            // Using toString() as a proxy for item name matching.
+            if (element.toString().toLowerCase().contains(itemName.toLowerCase())) {
+                elementToRamasser = element;
+                break;
+            }
+        }
+
+        if (elementToRamasser != null) {
+            if (elementToRamasser instanceof Aliment) {
+                boolean pickedUp = ramasserAlimentSurBlock((Aliment) elementToRamasser);
+                if (pickedUp) {
+                    return "Successfully picked up " + ((Aliment)elementToRamasser).getNom() + " from the ground.";
+                } else {
+                    return "Failed to pick up " + ((Aliment)elementToRamasser).getNom() + " (already picked up or error).";
+                }
+            } else {
+                // Generic element pickup
+                // Ensure this logic is safe: currentBlock.getElements().remove() then this.ramasserObjet()
+                boolean removedFromBlock = currentBlock.getElements().remove(elementToRamasser);
+                if (removedFromBlock) {
+                    this.ramasserObjet(elementToRamasser); // add to inventory
+                    return "Successfully picked up generic item " + elementToRamasser.getNom() + " from the ground.";
+                } else {
+                     return "Failed to pick up generic item " + elementToRamasser.getNom() + " from block.";
+                }
+            }
+        } else {
+            return "Could not find " + itemName + " on the current block.";
+        }
+    }
 }

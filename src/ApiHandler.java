@@ -6,11 +6,12 @@ import java.util.ArrayList;
 import Entite.Entite;
 import Monde.Monde;
 import Monde.Block;
-import src.MarkdownCommandParser; // Added import
-import src.ParsedCommand;       // Added import
-import java.util.Map;           // Added import for Map
+import src.MarkdownCommandParser;
+import src.ParsedCommand;
+import java.util.Map;
+import Entite.Heritage.Humain; // Added import for Humain
 
-// No direct need for Humain or Animaux imports if using Entite type polymorphically
+// No direct need for Animaux import if only Humain specific actions are added
 
 public class ApiHandler {
 
@@ -251,8 +252,58 @@ public class ApiHandler {
                     actionOutcome = entity.getId() + " waited.";
                     commandSuccess = true;
                     break;
-                // TODO: Add cases for "Eat", "Pickup" which might require Humain-specific logic
-                // For now, they will fall into the default "unknown command"
+                case "eat":
+                    if (entity instanceof Humain) {
+                        Humain humain = (Humain) entity;
+                        String foodItemName = params.get("FoodItemName");
+                        String quantityStr = params.get("Quantity");
+                        if (foodItemName != null && quantityStr != null) {
+                            try {
+                                int quantity = Integer.parseInt(quantityStr);
+                                if (quantity > 0) {
+                                    actionOutcome = humain.mangerItemEspecific(foodItemName, quantity);
+                                    commandSuccess = actionOutcome.startsWith("Successfully ate");
+                                    notificationMessages.add(actionOutcome);
+                                } else {
+                                    actionOutcome = "Eat action failed: Quantity must be positive.";
+                                    notificationMessages.add(actionOutcome);
+                                    commandSuccess = false;
+                                }
+                            } catch (NumberFormatException e) {
+                                actionOutcome = "Eat action failed: Invalid Quantity value: " + quantityStr;
+                                notificationMessages.add(actionOutcome);
+                                commandSuccess = false;
+                            }
+                        } else {
+                            actionOutcome = "Eat action failed: Missing FoodItemName or Quantity parameter.";
+                            notificationMessages.add(actionOutcome);
+                            commandSuccess = false;
+                        }
+                    } else {
+                        actionOutcome = "Eat action failed: Entity is not a Humain.";
+                        notificationMessages.add(actionOutcome);
+                        commandSuccess = false;
+                    }
+                    break;
+                case "pickup":
+                    if (entity instanceof Humain) {
+                        Humain humain = (Humain) entity;
+                        String itemName = params.get("ItemName");
+                        if (itemName != null) {
+                            actionOutcome = humain.ramasserItemEspecific(itemName);
+                            commandSuccess = actionOutcome.startsWith("Successfully picked up");
+                            notificationMessages.add(actionOutcome);
+                        } else {
+                            actionOutcome = "Pickup action failed: Missing ItemName parameter.";
+                            notificationMessages.add(actionOutcome);
+                            commandSuccess = false;
+                        }
+                    } else {
+                        actionOutcome = "Pickup action failed: Entity is not a Humain.";
+                        notificationMessages.add(actionOutcome);
+                        commandSuccess = false;
+                    }
+                    break;
                 default:
                     notificationMessages.add("Unknown or unsupported action: " + action);
                     actionOutcome = "Unknown action: " + action;
